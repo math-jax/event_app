@@ -16,8 +16,8 @@ class EventFactory extends Factory
         return [
             'title' => $this->faker->name(),
             'description' => $this->faker->paragraph($nbSentences = 3, $variableNbSentences = true),
-            'start_date' => now()->addWeeks(2)->toDateString(),
-            'end_date' => now()->subWeeks(2)->toDateString(),
+            'start_date' => now()->subWeeks(2)->toDateString(),
+            'end_date' => now()->addWeeks(2)->toDateString(),
             'created_at' => now(),
             'updated_at' => now(),
         ];

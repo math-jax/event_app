@@ -18,7 +18,7 @@ class EventController extends Controller
     public function index()
     {
         $this->data['events'] = Event::orderBy('start_date', 'DESC')->paginate(12);
-        return view('home', $this->data);
+        return view('event.index', $this->data);
     }
 
     /**
@@ -76,6 +76,7 @@ class EventController extends Controller
     public function edit($id)
     {
         $this->data['event'] = Event::find($id);
+        // dd($this->data['event']);
         return view('event.form', $this->data);
 
     }

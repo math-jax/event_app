@@ -13,7 +13,7 @@ class UpdateEventRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,31 @@ class UpdateEventRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'image' => 'nullable',
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'title' => 'Event Title Field',
+            'description' => 'Event Description Field',
+            'start_date' => 'Event Start Date Field',
+            'end_date' => 'Event End Date Field',
+            'image' => 'Event Image Field',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'required' => 'The :attribute is required',
+            'string' => 'The :attribute must be string',
+            'date' => 'The :attribute must be date',
         ];
     }
 }

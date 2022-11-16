@@ -21,8 +21,6 @@
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="{{ route('event.create') }}">Create</a>
                         <a class="dropdown-item" href="{{ route('event.index') }}">All Events</a>
-                        {{-- <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a> --}}
                     </div>
                 </li>
             </ul>

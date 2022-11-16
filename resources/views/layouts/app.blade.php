@@ -20,12 +20,13 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @yield('head')
 </head>
 <body>
     <div id="app">
         @include('partials.navbar')
         <main class="py-4">
-            @yield('content')
+            @yield('body')
         </main>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
