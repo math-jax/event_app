@@ -30,23 +30,17 @@
                                 <td><img src="{{ isset($event->image) ? '/storage/' . $event->image : '/images/01.jpg' }}"
                                         class="img-fluid img-thumbnail rounded"
                                         style="width: 50px;height:50px;border-radius:50px;" alt="{{ $event->title }}"></td>
-                                <td>{{ $event->title }}</td>
-                                <td>{{ $event->title }}</td>
-                                <td>{{ $event->start_date }}</td>
-                                <td>{{ $event->end_date }}</td>
+                                <td><a href="{{ route('event.show', $event->id) }}" target="_blank" rel="noopener noreferrer">{{ $event->title }}</a></td>
+                                <td>{{ $event->start_date->toDateString() }}</td>
+                                <td>{{ $event->end_date->toDateString() }}</td>
+                                <td>{{ $event->setEventStatus() }}</td>
                                 <td>
                                     <div class="d-flex justify-content-around">
-                                        <a class="btn btn-primary" href="{{ route('event.edit', $event->id) }}"
+                                        <a class="btn btn-info btn-sm" href="{{ route('event.edit', $event->id) }}"
                                             role="button">Edit</a>
-                                        <a class="btn btn-primary" href="{{ route('event.destroy', $event->id) }}"
+                                        <a class="btn btn-danger btn-sm" href="javascript:;"
                                             role="button"
-                                            onclick="event.preventDefault();
-                                                    document.getElementById('deleteForm').submit();">Delete</a>
-                                        <form id="deleteForm" action="{{ route('event.destroy', $event->id) }}"
-                                            method="POST" class="d-none">
-                                            @csrf
-                                            @method('DELETE')
-                                        </form>
+                                            onclick="deleteEvent({{ $event->id }});">Delete</a>
                                     </div>
                                 </td>
                             </tr>
@@ -85,5 +79,25 @@
                 });
             }).draw();
         });
+
+        //function to delete event
+        function deleteEvent(id) {
+            $.ajax({
+                url: '/event/delete/'+ id,
+                method: "DELETE",
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: id,
+                },
+                success: function (response) {
+                    new Noty({
+                        type: response.status,
+                        layout: 'topRight',
+                        text: response.message
+                    }).show();
+                    window.location.reload();
+                },
+            });
+        }
     </script>
 @endsection

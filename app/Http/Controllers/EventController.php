@@ -19,6 +19,7 @@ class EventController extends Controller
     {
         $this->data['events'] = Event::orderBy('start_date', 'DESC')->paginate(12);
         return view('event.index', $this->data);
+        // return view('event.index');
     }
 
     /**
@@ -39,9 +40,9 @@ class EventController extends Controller
      */
     public function store(StoreEventRequest $request)
     {
-        if($request->has('event_file')){
+        if ($request->has('event_file')) {
             $imagePath = $request->file('event_file')->store('/event/', 'public');
-        }else{
+        } else {
             $imagePath = null;
         }
 
@@ -50,6 +51,7 @@ class EventController extends Controller
         $event->description = $request->description;
         $event->start_date = $request->start_date;
         $event->end_date = $request->end_date;
+        $event->venue = $request->venue;
         $event->image = $imagePath;
         $event->save();
         return redirect()->route('event.index')->with('success', 'Event Created Successfully');
@@ -64,7 +66,7 @@ class EventController extends Controller
     public function show($id)
     {
         $this->data['event'] = Event::find($id);
-        return view('event', $this->data);
+        return view('event.show', $this->data);
     }
 
     /**
@@ -78,7 +80,6 @@ class EventController extends Controller
         $this->data['event'] = Event::find($id);
         // dd($this->data['event']);
         return view('event.form', $this->data);
-
     }
 
     /**
@@ -91,15 +92,16 @@ class EventController extends Controller
     public function update(UpdateEventRequest $request, $id)
     {
         $event = Event::find($id);
-        if($request->has('event_file')){
+        if ($request->has('event_file')) {
             $imagePath = $request->file('event_file')->store('/event/', 'public');
-        }else{
+        } else {
             $imagePath = null;
         }
         $event->title = $request->title;
         $event->description = $request->description;
         $event->start_date = $request->start_date;
         $event->end_date = $request->end_date;
+        $event->venue = $request->venue;
         $event->image = $imagePath;
         $event->save();
         return redirect()->route('event.index')->with('success', 'Event Updated Successfully');
@@ -115,6 +117,44 @@ class EventController extends Controller
     {
         $event = Event::find($id);
         $event->delete();
-        return redirect()->route('event.index')->with('success', 'Event Deleted Successfully');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Event Deleted Successfully'
+        ]);
+    }
+
+    public function loadEvents()
+    {
+        $events = Event::orderBy('start_date', 'DESC')->get();
+        return view('partials.eventCard', compact('events'));
+    }
+
+    public function sortEventBy($id)
+    {
+        switch ($id) {
+            case 0: // All Events
+                $events = Event::orderBy('start_date', 'DESC')->get();
+                return view('partials.eventCard', compact('events'));
+                break;
+            case 1: //Finished Events
+                $events = Event::where('end_date', '<', now()->toDateString())->orderBy('start_date', 'DESC')->get();
+                return view('partials.eventCard', compact('events'));
+                break;
+            case 2: //Finished Events in Past 7 Days
+                $events = Event::whereBetween('end_date', [now()->toDateString(), now()->subWeek()->toDateString()])->orderBy('start_date', 'DESC')->orderBy('start_date', 'DESC')->get();
+                return view('partials.eventCard', compact('events'));
+                break;
+            case 3: // Upcoming
+                $events = Event::where('start_date', '>', now()->toDateString())->orderBy('start_date', 'DESC')->get();
+                return view('partials.eventCard', compact('events'));
+                break;
+            case 4: // Upcoming within 7 days
+                $events = Event::whereBetween('start_date', [now()->addDay()->toDateString(), now()->addWeek()->toDateString()])->orderBy('start_date', 'DESC')->get();
+                return view('partials.eventCard', compact('events'));
+                break;
+            default: //default return empty collection
+            $events = collect([]);
+            return view('partials.eventCard', compact('events'));
+        }
     }
 }
